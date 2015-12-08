@@ -16,7 +16,9 @@ var music;
 var totals = {
     callKill: 0,
     call: 0
-}
+};
+
+var calls = [];
 
 function preload() {
 
@@ -68,6 +70,7 @@ function create() {
     //emitter.start(false, 8000, 400);
 
     setInterval(createCall,2000);
+    setInterval(callNotCaughtDestroy,4000);
 
 
 
@@ -91,6 +94,7 @@ function create() {
 
 }
 
+// cria itens a cada 2s
 function createCall() {
     var tempSprite = game.add.sprite(game.world.randomX, (game.world.randomY > 150) ? game.world.randomY - 50 : game.world.randomY, 'phone');
     tempSprite.inputEnabled = true;
@@ -101,8 +105,23 @@ function createCall() {
     tempSprite.body.collideWorldBounds = true;
     tempSprite.body.bounce.set(0.8);
     tempSprite.body.gravity.set(0, 180);
-
     totals.call += 1;
+
+    calls.push({
+        id: totals.call,
+        //date: new moment(),  // se precisar usar data para controlar quem deve ser deletado
+        item: tempSprite
+    });
+}
+
+// destroy itens nao pegos a cada 4s
+function callNotCaughtDestroy(){
+    _.each(calls, function(c,k){
+        if(c !== undefined && c.id < totals.call-2) {
+            c.item.destroy();
+            calls.splice(k,1);
+        }
+    });
 }
 
 function mute(){
